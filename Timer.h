@@ -1,6 +1,6 @@
 #pragma once
 
-#include "stdafx.h"
+#include "framework.h"
 
 class Timer {
 private:

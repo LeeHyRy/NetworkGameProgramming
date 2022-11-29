@@ -1,6 +1,6 @@
 #pragma once
 
-#include "stdafx.h"
+#include "framework.h"
 #include "Global.h"
 #include "TextureManager.h"
 #include "AnimationManager.h"
