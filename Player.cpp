@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "Player.h"
 #include "AnimationManager.h"
 #include "EffectManager.h"
@@ -57,9 +56,6 @@ Player::Player(const POINT& pt) {
 }
 
 Player::~Player() {
-	/// <summary>
-	/// 플레이어 소멸자
-	/// </summary>
 	if (m_animation) {
 		delete m_animation;
 	}
@@ -67,18 +63,10 @@ Player::~Player() {
 }
 
 POINT Player::GetPlayerPt() const {
-	/// <summary>
-	/// 플레이어 위치 가져오기
-	/// </summary>
-	/// <returns>플레이어 위치</returns>
 	return m_playerPt;
 }
 
 SIZE Player::GetPlayerSize() const {
-	/// <summary>
-	/// 플레이어 스프라이트 크기 가져오기
-	/// </summary>
-	/// <returns>플레이어 크기</returns>
 	return m_playerSize;
 }
 

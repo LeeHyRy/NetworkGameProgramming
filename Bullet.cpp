@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "Bullet.h"
 #include "AnimationManager.h"
 #include "Global.h"

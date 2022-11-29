@@ -18,7 +18,6 @@
 #define IDR_MENU1                       132
 #define IDD_DIALOG_IMG                  133
 #define IDD_DIALOG_SELIMG               134
-#define IDD_WAITINGROOM_ENTER           135
 #define IDC_EDIT1                       1000
 #define IDC_SELIMG                      1000
 #define IDC_LIST2                       1004
@@ -33,10 +32,6 @@
 #define IDC_ADDIMGKEY                   1010
 #define IDC_ADDIMGFILENAME              1011
 #define IDC_OBJTAG                      1012
-#define IDC_WAITINGROOM_ENTER_IP        1015
-#define IDOK_WAITINGROOM_ENTER          1017
-#define IDCANCEL_WAITINGROOM_ENTER      1018
-#define IDC_STATIC_WAITINGROOM_ENTER    1019
 #define ID_32771                        32771
 #define ID_32772                        32772
 #define ID_32773                        32773
@@ -58,9 +53,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        136
+#define _APS_NEXT_RESOURCE_VALUE        135
 #define _APS_NEXT_COMMAND_VALUE         32785
-#define _APS_NEXT_CONTROL_VALUE         1020
+#define _APS_NEXT_CONTROL_VALUE         1014
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

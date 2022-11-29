@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "Boss.h"
 #include "EffectManager.h"
 

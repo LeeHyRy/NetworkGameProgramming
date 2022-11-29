@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "Barigate.h"
 
 Barigate::Barigate()

@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "BadOrange.h"
 
 BadOrange::BadOrange() : Monster() {

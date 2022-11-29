@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "Monster.h"
 #include "AnimationManager.h"
 #include "EffectManager.h"

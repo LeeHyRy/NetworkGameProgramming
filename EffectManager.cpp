@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include "EffectManager.h"
 #include "Global.h"
 
