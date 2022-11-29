@@ -1,6 +1,6 @@
 #pragma once
 
-#include "framework.h"
+#include "stdafx.h"
 #include "Input.h"
 #include "Effect.h"
 

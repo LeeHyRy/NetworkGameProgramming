@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Global.h"
 #include "Structures.h"
 #include "GameFrame.h"

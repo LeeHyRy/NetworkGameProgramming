@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "GameFrame.h"
 #include "Timer.h"
 #include "Input.h"

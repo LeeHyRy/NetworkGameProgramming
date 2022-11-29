@@ -1,6 +1,6 @@
 #pragma once
 
-#include "framework.h"
+#include "stdafx.h"
 #include "Animation.h"
 #include "Bullet.h"
 #include "hpBar.h"

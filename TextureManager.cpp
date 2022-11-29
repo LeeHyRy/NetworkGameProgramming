@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "TextureManager.h"
 #include "Global.h"
 
@@ -37,7 +38,8 @@ void TextureManager::Destroy() {
 
 }
 
-bool TextureManager::Init(HINSTANCE hInst, HDC mainDC, const wchar_t* backGroundFileName) {
+bool TextureManager::Init(HINSTANCE hInst, HDC 
+	DC, const wchar_t* backGroundFileName) {
 	m_hInst = hInst;
 	if (!m_hInst) {
 		return false;

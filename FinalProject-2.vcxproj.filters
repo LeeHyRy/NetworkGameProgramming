@@ -82,6 +82,18 @@
     <Filter Include="소스 파일\Object\Player">
       <UniqueIdentifier>{92eab713-5bd7-4741-8a45-412dc43c4661}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Core\Network">
+      <UniqueIdentifier>{e4f2d681-492b-4494-ac8a-55491b0eab3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Core\Network">
+      <UniqueIdentifier>{3c8c9c0a-e462-42ac-bb4c-808773f7ae3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Object\UI">
+      <UniqueIdentifier>{ab21e801-e941-4e87-bdc8-5488e59814f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Object\UI">
+      <UniqueIdentifier>{0677bfc5-8410-4e2b-8948-76e5f6c05e70}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FinalProject-2.h">
@@ -102,7 +114,7 @@
     <ClInclude Include="targetver.h">
       <Filter>헤더 파일\Core</Filter>
     </ClInclude>
-    <ClInclude Include="framework.h">
+    <ClInclude Include="stdafx.h">
       <Filter>헤더 파일\Core</Filter>
     </ClInclude>
     <ClInclude Include="GameFrame.h">
@@ -167,6 +179,30 @@
     </ClInclude>
     <ClInclude Include="Button.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerInfo.h">
+      <Filter>헤더 파일\Core\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="WaitingServer.h">
+      <Filter>헤더 파일\Core\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="WaitingClient.h">
+      <Filter>헤더 파일\Core\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="IngameServer.h">
+      <Filter>헤더 파일\Core\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="IngameClient.h">
+      <Filter>헤더 파일\Core\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="MainMenu.h">
+      <Filter>헤더 파일\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiChoiceMenu.h">
+      <Filter>헤더 파일\Stage</Filter>
+    </ClInclude>
+    <ClInclude Include="UI.h">
+      <Filter>헤더 파일\Object\UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -235,6 +271,27 @@
     </ClCompile>
     <ClCompile Include="Button.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>소스 파일\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerInfo.cpp">
+      <Filter>소스 파일\Core\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="WaitingServer.cpp">
+      <Filter>소스 파일\Core\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="WaitingClient.cpp">
+      <Filter>소스 파일\Core\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="IngameServer.cpp">
+      <Filter>소스 파일\Core\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="IngameClient.cpp">
+      <Filter>소스 파일\Core\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="UI.cpp">
+      <Filter>소스 파일\Object\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

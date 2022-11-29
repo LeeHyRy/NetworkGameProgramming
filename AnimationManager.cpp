@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "AnimationManager.h"
 #include "TextureManager.h"
 #include "Global.h"

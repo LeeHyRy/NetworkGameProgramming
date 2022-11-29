@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Portal.h"
 
 Portal::Portal()

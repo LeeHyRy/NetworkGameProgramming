@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Effect.h"
 
 Effect::Effect(const string& animationName) {

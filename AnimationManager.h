@@ -2,7 +2,7 @@
 
 #include "Animation.h"
 #include "TextureManager.h"
-#include "framework.h"
+#include "stdafx.h"
 
 class AnimationManager {
 private:
