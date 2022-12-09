@@ -27,7 +27,6 @@ class WAITING_ROOM
 {
 public:
 	WAITING_ROOM();
-	WAITING_ROOM(HWND dlg);
 	~WAITING_ROOM();
 	WAITING_ROOM(const WAITING_ROOM& wr);
 	int MAKE_ROOM();
@@ -38,14 +37,18 @@ public:
 	bool	checkJoin(char* name);
 	int		stringAnalysis(char* recvdata);
 
+	void	pressReady();
+
 	void	enableConnectGui(bool isEnable);
 	void	printErrorEditbox(char* errstr);
+
 
 	int			GetMyNum();
 	void		SetMyNum(int in);
 	SOCKET		GetMySock();
 	void		SetMySock(SOCKET in);
 	HWND		GetDlgHandle();
+	void		SetDlgHandle(HWND in);
 
 
 private:
@@ -54,8 +57,9 @@ private:
 	SOCKET				my_sock;
 	struct sockaddr_in	serveraddr;
 	
+	bool				is_ready{ false };
 	bool				is_host{ false };
-	int					my_num;
+	int					my_num{ -1 };
 	HWND				DlgHandle;
 	
 };

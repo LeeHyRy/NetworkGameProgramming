@@ -11,6 +11,7 @@ HINSTANCE hInst;                                // 현재 인스턴스입니다.
 HWND hWndAll;
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
+WAITING_ROOM wr;
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -463,12 +464,12 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 // 대화상자 프로시저
 INT_PTR CALLBACK DialogProc_Server(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    WAITING_ROOM wr(hDlg);
     char nickbuf[NICKBUFSIZE];
     char ipbuf[60] = "\0";
 
     switch (uMsg) {
     case WM_INITDIALOG:
+        wr.SetDlgHandle(hDlg);
         SetDlgItemTextA(hDlg, IDC_IPADDRESS, "127.0.0.1");
         return TRUE;
     case WM_COMMAND:
@@ -506,6 +507,9 @@ INT_PTR CALLBACK DialogProc_Server(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM l
             else if (nickbuf[0] == ' ') {
                 wr.printErrorEditbox((char*)"사용 불가능한 닉네임입니다. (공백닉네임)");
             }
+            return TRUE;
+        case IDC_READY:
+            wr.pressReady();
             return TRUE;
         }
         return FALSE;

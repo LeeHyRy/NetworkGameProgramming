@@ -3,7 +3,9 @@
 // FinalProject-2.rc에서 사용되고 있습니다.
 //
 #define IDC_MYICON                      2
-#define IDCANCEL2                       3
+#define IDC_READY                       3
+#define IDC_READY2                      4
+#define IDC_START                       4
 #define IDD_FINALPROJECT2_DIALOG        102
 #define IDS_APP_TITLE                   103
 #define IDD_ABOUTBOX                    103
@@ -41,12 +43,11 @@
 #define IDC_P1NAME                      1015
 #define IDC_P2NAME                      1016
 #define IDC_P3NAME                      1017
-#define IDC_IPADDRESS1                  1018
 #define IDC_IPADDRESS                   1018
-#define IDC_HOSTNAME2                   1019
-#define IDC_HOSTNAME3                   1020
-#define IDC_HOSTNAME4                   1021
-#define IDC_HOSTNAME5                   1022
+#define IDC_HOSTREADY                   1019
+#define IDC_P1READY                     1020
+#define IDC_P2READY                     1021
+#define IDC_P3READY                     1022
 #define ID_32771                        32771
 #define ID_32772                        32772
 #define ID_32773                        32773

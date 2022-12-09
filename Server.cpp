@@ -9,7 +9,6 @@ DWORD WINAPI roomServerThread(LPVOID arg)
 	int addrlen = sizeof(clientaddr);
 	HANDLE hnd;
 
-
 	while (1) {
 		client_sock = accept(server_sock, (struct sockaddr*)&clientaddr, &addrlen);
 		short cl_num = wr_server.FindBlankPlayer();
@@ -83,22 +82,22 @@ DWORD WINAPI roomDataResendThread(LPVOID arg)
 	SOCKET cl_sock = wr_server.GetMySock();
 	HWND hDlg = wr_server.GetDlgHandle();
 	char recvcode[30];
-	char nickbuf[NICKBUFSIZE];
+	char tmpbuf[NICKBUFSIZE];
 	char tmpstr[2];
 	int retval = 0;
 
 	// Host Nickname
-	GetDlgItemTextA(hDlg, IDC_EDITNICKNAME, nickbuf, NICKBUFSIZE);
-	send(cl_sock, nickbuf, NICKBUFSIZE, 0);
+	GetDlgItemTextA(hDlg, IDC_EDITNICKNAME, tmpbuf, NICKBUFSIZE);
+	send(cl_sock, tmpbuf, NICKBUFSIZE, 0);
 
 	while (1) {
 		// 재분배
 		for (int i{}; i < 3; ++i) {
-			GetDlgItemTextA(hDlg, IDC_P1NAME + i, nickbuf, NICKBUFSIZE);
+			GetDlgItemTextA(hDlg, IDC_P1NAME + i, tmpbuf, NICKBUFSIZE);
 			_itoa(i, tmpstr, 10);
 			retval = send(cl_sock, (char*)"NN", 3, 0);
 			retval = send(cl_sock, tmpstr, 2, 0);
-			retval = send(cl_sock, nickbuf, NICKBUFSIZE, 0);
+			retval = send(cl_sock, tmpbuf, NICKBUFSIZE, 0);
 		}
 		if (retval == SOCKET_ERROR) {
 			break;
@@ -114,12 +113,6 @@ WAITING_ROOM::WAITING_ROOM()
 	WSAStartup(MAKEWORD(2, 2), &wsa);
 }
 
-WAITING_ROOM::WAITING_ROOM(HWND dlg)
-{
-	WSAStartup(MAKEWORD(2, 2), &wsa);
-	DlgHandle = dlg;
-}
-
 WAITING_ROOM::~WAITING_ROOM()
 {
 }
@@ -130,18 +123,15 @@ WAITING_ROOM::WAITING_ROOM(const WAITING_ROOM& wr)
 	my_sock = wr.my_sock;
 	serveraddr = wr.serveraddr;
 
+	is_ready = wr.is_ready;
 	is_host = wr.is_host;
 	my_num = wr.my_num;
 	DlgHandle = wr.DlgHandle;
-	for (int i{}; i < 3; ++i) {
-		player[i].isReady = wr.player[i].isReady;
-		strcpy(player[i].nickname, wr.player[i].nickname);
-		player[i].sock = wr.player[i].sock;
-	}
 }
 
 int WAITING_ROOM::MAKE_ROOM()
 {
+	my_num = -2;
 	is_host = true;
 	int retval = 0;
 	my_sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -167,6 +157,7 @@ int WAITING_ROOM::MAKE_ROOM()
 
 int WAITING_ROOM::CONNECT_ROOM(char* serverip, char* name)
 {
+	my_num = -2;
 	is_host = false;
 	my_sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (my_sock == INVALID_SOCKET)
@@ -238,6 +229,7 @@ int WAITING_ROOM::stringAnalysis(char* recvdata)
 {
 	int retval = 0;
 	char recvcode[30];
+	char tmpstr[2];
 
 	// Host인 경우의 수신정보 처리
 	if (is_host) {
@@ -248,6 +240,13 @@ int WAITING_ROOM::stringAnalysis(char* recvdata)
 				SetDlgItemTextA(DlgHandle, IDC_P1NAME + my_num, recvcode); // IDC_P1NAME + n = IDC_P(n+1)NAME
 			else 
 				return -1; // 닉네임 중복
+		}
+		else if (strcmp(recvdata, "RD") == 0) { // Ready 정보 수신의 경우
+			GetDlgItemTextA(DlgHandle, IDC_P1READY + my_num, recvcode, 10);
+			SetDlgItemTextA(DlgHandle, IDC_P1READY + my_num, (strcmp(recvcode, "") == 0) ? "Ready!" : "");
+			retval = send(my_sock, (char*)"RD", 3, 0);
+			_itoa(my_num, tmpstr, 10);
+			retval = send(my_sock, tmpstr, 2, 0);
 		}
 	}
 	// Client인 경우의 수신정보 처리
@@ -260,9 +259,25 @@ int WAITING_ROOM::stringAnalysis(char* recvdata)
 				return -1;
 			SetDlgItemTextA(DlgHandle, IDC_P1NAME + editnum, recvcode); // IDC_P1NAME + n = IDC_P(n+1)NAME
 		}
+		else if (strcmp(recvdata, "RD") == 0) { // Ready 정보 수신의 경우
+			if (recv(my_sock, recvcode, 2, MSG_WAITALL) <= 0)
+				return -1;
+			int editnum = atoi(recvcode);
+			char tmpstr[10];
+			GetDlgItemTextA(DlgHandle, IDC_P1READY + editnum, tmpstr, 10);
+			SetDlgItemTextA(DlgHandle, IDC_P1READY + editnum, (strcmp(tmpstr, "") == 0) ? "Ready!" : "");
+		}
 	}
 
 	return 0;
+}
+
+void WAITING_ROOM::pressReady()
+{
+	if (!is_host){
+		is_ready = !is_ready;
+		send(my_sock, "RD", 3, 0);
+	}
 }
 
 void WAITING_ROOM::enableConnectGui(bool isEnable)
@@ -307,4 +322,9 @@ void WAITING_ROOM::SetMySock(SOCKET in)
 HWND WAITING_ROOM::GetDlgHandle()
 {
 	return DlgHandle;
+}
+
+void WAITING_ROOM::SetDlgHandle(HWND in)
+{
+	DlgHandle = in;
 }
