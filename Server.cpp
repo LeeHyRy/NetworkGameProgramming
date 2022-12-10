@@ -147,7 +147,7 @@ WAITING_ROOM::WAITING_ROOM(const WAITING_ROOM& wr)
 	DlgHandle = wr.DlgHandle;
 }
 
-int WAITING_ROOM::MAKE_ROOM()
+int WAITING_ROOM::MAKE_ROOM(char* serverport)
 {
 	my_num = -2;
 	is_host = true;
@@ -159,7 +159,7 @@ int WAITING_ROOM::MAKE_ROOM()
 	memset(&serveraddr, 0, sizeof(serveraddr));
 	serveraddr.sin_family = AF_INET;
 	serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	serveraddr.sin_port = htons(SERVERPORT);
+	serveraddr.sin_port = htons(atoi(serverport));
 	retval = bind(my_sock, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
 	if (retval == SOCKET_ERROR)
 		return -1;
@@ -173,7 +173,7 @@ int WAITING_ROOM::MAKE_ROOM()
 	return 0;
 }
 
-int WAITING_ROOM::CONNECT_ROOM(char* serverip, char* name)
+int WAITING_ROOM::CONNECT_ROOM(char* serverip, char* name, char* serverport)
 {
 	my_num = -2;
 	is_host = false;
@@ -184,7 +184,7 @@ int WAITING_ROOM::CONNECT_ROOM(char* serverip, char* name)
 	memset(&serveraddr, 0, sizeof(serveraddr));
 	serveraddr.sin_family = AF_INET;
 	inet_pton(AF_INET, serverip, &serveraddr.sin_addr);
-	serveraddr.sin_port = htons(SERVERPORT);
+	serveraddr.sin_port = htons(atoi(serverport));
 	if (connect(my_sock, (struct sockaddr*)&serveraddr, sizeof(serveraddr)) == SOCKET_ERROR)
 		return -2;
 
@@ -317,10 +317,13 @@ void WAITING_ROOM::enableConnectGui(bool isEnable)
 {
 	HWND HwndEditNickname = GetDlgItem(DlgHandle, IDC_EDITNICKNAME);
 	HWND HwndIpaddress = GetDlgItem(DlgHandle, IDC_IPADDRESS);
+	HWND HwndServerPort = GetDlgItem(DlgHandle, IDC_EDIT_SERVERPORT);
 	HWND HwndMakeroom = GetDlgItem(DlgHandle, IDC_MAKEROOM);
 	HWND HwndConnectroom = GetDlgItem(DlgHandle, IDC_CONNECTROOM);
+	
 	EnableWindow(HwndMakeroom, isEnable);
 	EnableWindow(HwndIpaddress, isEnable);
+	EnableWindow(HwndServerPort, isEnable);
 	EnableWindow(HwndEditNickname, isEnable);
 	EnableWindow(HwndConnectroom, isEnable);
 }

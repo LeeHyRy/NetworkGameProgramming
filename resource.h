@@ -28,6 +28,7 @@
 #define IDC_LIST2                       1004
 #define IDC_EDIT_ADDBG                  1005
 #define IDC_ADDBGKEY                    1005
+#define IDC_EDIT_SERVERPORT             1005
 #define IDC_EDIT_SAVE                   1006
 #define IDC_LIST1                       1007
 #define IDC_ADDBGFILENAME               1007
@@ -71,7 +72,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        136
 #define _APS_NEXT_COMMAND_VALUE         32785
-#define _APS_NEXT_CONTROL_VALUE         1019
+#define _APS_NEXT_CONTROL_VALUE         1026
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

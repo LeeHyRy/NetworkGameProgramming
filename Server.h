@@ -28,8 +28,8 @@ public:
 	WAITING_ROOM();
 	~WAITING_ROOM();
 	WAITING_ROOM(const WAITING_ROOM& wr);
-	int MAKE_ROOM();
-	int CONNECT_ROOM(char* serverip, char* name);
+	int MAKE_ROOM(char* serverport);
+	int CONNECT_ROOM(char* serverip, char* name, char* serverport);
 
 	int		FindBlankPlayer();
 	bool	checkNickReduplication(char* name);

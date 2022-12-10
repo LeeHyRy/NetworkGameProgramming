@@ -56,6 +56,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg{ };
 
+    //다이얼로그(대기방)
     DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG_SERVER), msg.hwnd, DialogProc_Server);
     // 기본 메시지 루프입니다:
     while (true) {
@@ -466,23 +467,27 @@ INT_PTR CALLBACK DialogProc_Server(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM l
 {
     char nickbuf[NICKBUFSIZE];
     char ipbuf[60] = "\0";
+    char portbuf[21];
 
     switch (uMsg) {
     case WM_INITDIALOG:
         wr.SetDlgHandle(hDlg);
         SetDlgItemTextA(hDlg, IDC_IPADDRESS, "127.0.0.1");
+        SetDlgItemTextA(hDlg, IDC_EDIT_SERVERPORT, "4444");
         return TRUE;
     case WM_COMMAND:
         switch (LOWORD(wParam)) {
         case IDC_MAKEROOM:
-            GetDlgItemTextA(hDlg, IDC_EDITNICKNAME, nickbuf, NICKBUFSIZE);
+            GetDlgItemTextA(hDlg, IDC_EDITNICKNAME, nickbuf, NICKBUFSIZE); //닉네임 설정
             nickbuf[NICKBUFSIZE - 1] = '\0';
+            GetDlgItemTextA(hDlg, IDC_EDIT_SERVERPORT, portbuf, NICKBUFSIZE); //포트번호 설정
             if (nickbuf[0] != '\0' && nickbuf[0] != ' ') {
-                if (wr.MAKE_ROOM() == 0) {
+                if (wr.MAKE_ROOM(portbuf) == 0) {
                     wr.enableConnectGui(FALSE);
                     SetDlgItemTextA(hDlg, IDC_EDITNICKNAME, nickbuf);
                     SetDlgItemTextA(hDlg, IDC_HOSTNAME, nickbuf);
                     SetDlgItemTextA(hDlg, IDC_IPADDRESS, ipbuf);
+                    SetDlgItemTextA(hDlg, IDC_EDIT_SERVERPORT, portbuf);
                 }
             }
             else if (nickbuf[0] == ' ')
@@ -490,11 +495,12 @@ INT_PTR CALLBACK DialogProc_Server(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM l
 
             return TRUE;
         case IDC_CONNECTROOM:
-            GetDlgItemTextA(hDlg, IDC_EDITNICKNAME, nickbuf, NICKBUFSIZE);
+            GetDlgItemTextA(hDlg, IDC_EDITNICKNAME, nickbuf, NICKBUFSIZE); //닉네임 설정
             nickbuf[NICKBUFSIZE - 1] = '\0';
+            GetDlgItemTextA(hDlg, IDC_EDIT_SERVERPORT, portbuf, NICKBUFSIZE); //포트번호 설정
             if (nickbuf[0] != '\0' && nickbuf[0] != ' ') {
                 GetDlgItemTextA(hDlg, IDC_IPADDRESS, ipbuf, NICKBUFSIZE);
-                int retval = wr.CONNECT_ROOM(ipbuf, nickbuf);
+                int retval = wr.CONNECT_ROOM(ipbuf, nickbuf, portbuf);
                 if (retval == 0) {
                     wr.enableConnectGui(FALSE);
                     SetDlgItemTextA(hDlg, IDC_EDITNICKNAME, nickbuf);
