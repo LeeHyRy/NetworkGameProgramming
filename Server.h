@@ -8,14 +8,13 @@
 
 #pragma comment(lib, "ws2_32") // ws2_32.lib ¸µÅ©
 
-#define SERVERPORT 9000
+#define SERVERPORT 4444
 #define NICKBUFSIZE 21
 
 DWORD WINAPI roomServerThread(LPVOID arg);
 DWORD WINAPI roomClientThread(LPVOID arg);
 DWORD WINAPI roomDataProcessingThread(LPVOID arg);
 DWORD WINAPI roomDataResendThread(LPVOID arg);
-
 
 typedef struct PLAYERINFO {
 	char nickname[NICKBUFSIZE] = "";
@@ -61,7 +60,6 @@ private:
 	bool				is_host{ false };
 	int					my_num{ -1 };
 	HWND				DlgHandle;
-	
 };
 
 struct CLIENTINFO {

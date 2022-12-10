@@ -11,8 +11,8 @@
 
 class Player {
 public:
-	Player();
-	Player(const POINT& pt);
+	Player(bool myControl);
+	Player(bool myControl, const POINT& pt);
 	~Player();
 
 private:
@@ -25,6 +25,7 @@ private:
 	SIZE m_playerSize{ 100, 100 };
 
 	int m_hp{ 300 };
+	bool m_myControl{ false }; //이 캐릭터가 내가 조정하는 캐릭터인지
 
 	// jump
 	bool m_jumped{ false };

@@ -146,6 +146,12 @@ void Stage::Update(float deltaTime) {
 		m_player->Update(deltaTime);
 		CalCameraPos();
 	}
+	//다른 플레이어 업데이트
+	list<Player*>::iterator otherPlayeriter = m_otherPlayerList.begin();
+	list<Player*>::iterator otherPlayeriterEnd = m_otherPlayerList.end();
+	for (; otherPlayeriter != otherPlayeriterEnd; ++otherPlayeriter) {
+		(*otherPlayeriter)->Update(deltaTime);
+	}
 
 	if (m_boss) {
 		if (m_player) {
@@ -284,6 +290,12 @@ void Stage::Render(HDC mainDC) {
 
 	if (m_player) {
 		m_player->Render(m_backBuffer->GetDC());
+		m_backBuffer->ReleaseDC();
+	}
+	//다른 플레이어 렌더
+	list<Player*>::iterator otherEnd = m_otherPlayerList.end();
+	for (auto iter = m_otherPlayerList.begin(); iter != otherEnd; ++iter) {
+		(*iter)->Render(m_backBuffer->GetDC());
 		m_backBuffer->ReleaseDC();
 	}
 
@@ -678,9 +690,12 @@ bool Stage::Load(const string& fileName) {
 		}
 		else if (tag == TAGPLAYER) {
 			if (!m_player) {
-				Player* newObj = new Player;
+				Player* newObj = new Player(true);
 				newObj->Load(fp);
 				m_player = newObj;
+
+				Player* OtherPlayer1 = new Player(false);
+				m_otherPlayerList.push_back(OtherPlayer1);
 			}
 		}
 		else if (tag == TAGBARIGATE) {

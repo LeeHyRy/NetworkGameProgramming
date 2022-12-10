@@ -1,8 +1,9 @@
 #include "Player.h"
 #include "AnimationManager.h"
 #include "EffectManager.h"
+#include "Server.h"
 
-Player::Player() {
+Player::Player(bool myControl) {
 	AnimationManager::GetInst()->AddNewAnimation("PlayerAnimation", L"RedHood.bmp", POINT{ 26, 5 });
 
 	m_animation = AnimationManager::GetInst()->GetAnimation("PlayerAnimation");
@@ -26,9 +27,13 @@ Player::Player() {
 	float sizeScale = m_playerSize.cx / (float)imgSize.cx;
 	m_hitBoxSize = { (LONG)(m_hitBoxSizeOrigin.cx * sizeScale), (LONG)(m_hitBoxSizeOrigin.cy * sizeScale) };
 	m_hitBoxSizeOrigin = m_hitBoxSize;
+
+	//내가 조정하는 캐릭터로 생성되면 해당 bool 변수 true
+	if (myControl)
+		m_myControl = true;
 }
 
-Player::Player(const POINT& pt) {
+Player::Player(bool myControl, const POINT& pt) {
 	AnimationManager::GetInst()->AddNewAnimation("PlayerAnimation", L"RedHood.bmp", POINT{ 26, 5 });
 
 	m_animation = AnimationManager::GetInst()->GetAnimation("PlayerAnimation");
@@ -53,6 +58,10 @@ Player::Player(const POINT& pt) {
 	float sizeScale = m_playerSize.cx / (float)imgSize.cx;
 	m_hitBoxSize = { (LONG)(m_hitBoxSizeOrigin.cx * sizeScale), (LONG)(m_hitBoxSizeOrigin.cy * sizeScale) };
 	m_hitBoxSizeOrigin = m_hitBoxSize;
+
+	//내가 조정하는 캐릭터로 생성되면 해당 bool 변수 true
+	if (myControl)
+		m_myControl = true;
 }
 
 Player::~Player() {
@@ -214,108 +223,112 @@ void Player::Render(HDC destDC) {
 	m_animation->Render(destDC, m_playerSize, GetRenderRC(), m_curClip->GetImgRC(), rev, RGB(255, 255, 255));
 
 	m_hpBar.Render(destDC);
+
 }
 
 void Player::Input(float deltaTime) {
-	if (m_deadAnimation) {
-		return;
-	}
-
-	if (!m_noMoveAnimation) {
-		if (!m_dash) {
-			if (keyInfo[VK_LEFT].dClick or keyInfo[VK_RIGHT].dClick) {
-				Dash();
-			}
+	if (m_myControl)
+	{
+		if (m_deadAnimation) {
+			return;
 		}
 
-		if (keyInfo[VK_LEFT].pressed) {
-			if (!m_spAnimation and !m_jumped) {
-				m_curClip = m_animation->GetClip("run");
+		if (!m_noMoveAnimation) {
+			if (!m_dash) {
+				if (keyInfo[VK_LEFT].dClick or keyInfo[VK_RIGHT].dClick) {
+					Dash();
+				}
 			}
-			MoveLeft(deltaTime);
-		}
-		else if (keyInfo[VK_LEFT].up) {
-			if (!m_spAnimation and !m_jumped) {
-				m_curClip = m_animation->GetClip("default");
-			}
-		}
 
-		if (keyInfo[VK_RIGHT].pressed) {
-			if (!m_spAnimation and !m_jumped) {
-				m_curClip = m_animation->GetClip("run");
+			if (keyInfo[VK_LEFT].pressed) {
+				if (!m_spAnimation and !m_jumped) {
+					m_curClip = m_animation->GetClip("run");
+				}
+				MoveLeft(deltaTime);
 			}
-			MoveRight(deltaTime);
-		}
-		else if (keyInfo[VK_RIGHT].up) {
-			if (!m_spAnimation and !m_jumped) {
-				m_curClip = m_animation->GetClip("default");
+			else if (keyInfo[VK_LEFT].up) {
+				if (!m_spAnimation and !m_jumped) {
+					m_curClip = m_animation->GetClip("default");
+				}
+			}
+
+			if (keyInfo[VK_RIGHT].pressed) {
+				if (!m_spAnimation and !m_jumped) {
+					m_curClip = m_animation->GetClip("run");
+				}
+				MoveRight(deltaTime);
+			}
+			else if (keyInfo[VK_RIGHT].up) {
+				if (!m_spAnimation and !m_jumped) {
+					m_curClip = m_animation->GetClip("default");
+				}
+			}
+
+			if (debuging) {
+				if (keyInfo[VK_UP].pressed) {
+					if (!m_jumped) {
+						if (!m_spAnimation) {
+							m_curClip = m_animation->GetClip("run");
+						}
+						SetPower(0, true);
+						MoveUp(deltaTime);
+					}
+				}
+				else if (keyInfo[VK_UP].up) {
+					if (!m_spAnimation) {
+						m_curClip = m_animation->GetClip("default");
+					}
+				}
 			}
 		}
 
 		if (debuging) {
-			if (keyInfo[VK_UP].pressed) {
+			if (keyInfo[VK_DOWN].pressed) {
 				if (!m_jumped) {
 					if (!m_spAnimation) {
 						m_curClip = m_animation->GetClip("run");
 					}
 					SetPower(0, true);
-					MoveUp(deltaTime);
+					MoveDown(deltaTime);
 				}
 			}
-			else if (keyInfo[VK_UP].up) {
+			else if (keyInfo[VK_DOWN].up) {
 				if (!m_spAnimation) {
 					m_curClip = m_animation->GetClip("default");
 				}
 			}
 		}
-	}
 
-	if (debuging) {
-		if (keyInfo[VK_DOWN].pressed) {
+		if (keyInfo[VK_SPACE].down) {
 			if (!m_jumped) {
+				m_jumped = true;
 				if (!m_spAnimation) {
-					m_curClip = m_animation->GetClip("run");
+					m_curClip->Reset();
+					m_curClip = m_animation->GetClip("jump");
 				}
-				SetPower(0, true);
-				MoveDown(deltaTime);
+				Jump();
 			}
 		}
-		else if (keyInfo[VK_DOWN].up) {
-			if (!m_spAnimation) {
-				m_curClip = m_animation->GetClip("default");
-			}
+
+		if (m_dash) {
+			Move(deltaTime, m_lookLR);
 		}
-	}
 
-	if (keyInfo[VK_SPACE].down) {
-		if (!m_jumped) {
-			m_jumped = true;
-			if (!m_spAnimation) {
-				m_curClip->Reset();
-				m_curClip = m_animation->GetClip("jump");
-			}
-			Jump();
+		if (keyInfo['A'].down) {
+			Skill1();
 		}
-	}
 
-	if (m_dash) {
-		Move(deltaTime, m_lookLR);
-	}
+		if (keyInfo['Z'].down) {
+			Attack();
+		}
 
-	if (keyInfo['A'].down) {
-		Skill1();
-	}
+		if (keyInfo['X'].dClick) {
+			FastAttack();
+		}
 
-	if (keyInfo['Z'].down) {
-		Attack();
-	}
-
-	if (keyInfo['X'].dClick) {
-		FastAttack();
-	}
-
-	if (keyInfo['C'].down) {
-		SetSpAnimation(true, 1, "AxeAtk");
+		if (keyInfo['C'].down) {
+			SetSpAnimation(true, 1, "AxeAtk");
+		}
 	}
 }
 
