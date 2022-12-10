@@ -37,6 +37,8 @@ public:
 	int		stringAnalysis(char* recvdata);
 
 	void	pressReady();
+	bool	checkAllReady();
+	void	pressStart();
 
 	void	enableConnectGui(bool isEnable);
 	void	printErrorEditbox(char* errstr);
@@ -51,11 +53,10 @@ public:
 
 
 private:
-	PlayerInfo			player[3];
 	WSADATA				wsa;
 	SOCKET				my_sock;
 	struct sockaddr_in	serveraddr;
-	
+
 	bool				is_ready{ false };
 	bool				is_host{ false };
 	int					my_num{ -1 };

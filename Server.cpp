@@ -86,6 +86,13 @@ DWORD WINAPI roomDataResendThread(LPVOID arg)
 	char tmpstr[2];
 	int retval = 0;
 
+
+	bool beforeReadyStatus[3]; // 이전 레디상태와 비교하여 dlg에 변화가 있으면 재전송하는 변수
+	for (int i{}; i < 3; ++i) {
+		GetDlgItemTextA(hDlg, IDC_P1READY + i, tmpbuf, 10);
+		beforeReadyStatus[i] = (strcmp(tmpbuf, "") == 0) ? false : true;
+	}
+	
 	// Host Nickname
 	GetDlgItemTextA(hDlg, IDC_EDITNICKNAME, tmpbuf, NICKBUFSIZE);
 	send(cl_sock, tmpbuf, NICKBUFSIZE, 0);
@@ -93,16 +100,27 @@ DWORD WINAPI roomDataResendThread(LPVOID arg)
 	while (1) {
 		// 재분배
 		for (int i{}; i < 3; ++i) {
+			// i번 플레이어의 닉네임 정보가 바뀌었단 사실을 클라이언트에게 전송
 			GetDlgItemTextA(hDlg, IDC_P1NAME + i, tmpbuf, NICKBUFSIZE);
 			_itoa(i, tmpstr, 10);
 			retval = send(cl_sock, (char*)"NN", 3, 0);
 			retval = send(cl_sock, tmpstr, 2, 0);
 			retval = send(cl_sock, tmpbuf, NICKBUFSIZE, 0);
+
+			// i번 플레이어의 레디 정보가 바뀌었단 사실을 클라이언트에게 전송
+			GetDlgItemTextA(hDlg, IDC_P1READY + i, tmpbuf, 10);
+			bool dlgReady = (strcmp(tmpbuf, "") == 0) ? false : true;
+			if (beforeReadyStatus[i] != dlgReady) {
+				beforeReadyStatus[i] = !beforeReadyStatus[i];
+				retval = send(cl_sock, (char*)"RD", 3, 0);
+				retval = send(cl_sock, tmpstr, 2, 0);
+			}
 		}
+
 		if (retval == SOCKET_ERROR) {
 			break;
 		}
-		Sleep(1000);
+		Sleep(333);
 	}
 
 	return 0;
@@ -244,9 +262,6 @@ int WAITING_ROOM::stringAnalysis(char* recvdata)
 		else if (strcmp(recvdata, "RD") == 0) { // Ready 정보 수신의 경우
 			GetDlgItemTextA(DlgHandle, IDC_P1READY + my_num, recvcode, 10);
 			SetDlgItemTextA(DlgHandle, IDC_P1READY + my_num, (strcmp(recvcode, "") == 0) ? "Ready!" : "");
-			retval = send(my_sock, (char*)"RD", 3, 0);
-			_itoa(my_num, tmpstr, 10);
-			retval = send(my_sock, tmpstr, 2, 0);
 		}
 	}
 	// Client인 경우의 수신정보 처리
@@ -277,6 +292,24 @@ void WAITING_ROOM::pressReady()
 	if (!is_host){
 		is_ready = !is_ready;
 		send(my_sock, "RD", 3, 0);
+	}
+}
+
+bool WAITING_ROOM::checkAllReady()
+{
+	char tmpstr[10];
+	for (int i{}; i < 3; ++i) {
+		GetDlgItemTextA(DlgHandle, IDC_P1READY + i, tmpstr, 10);
+		if (strcmp(tmpstr, "") == 0)
+			return false;
+	}
+	return true;
+}
+
+void WAITING_ROOM::pressStart()
+{
+	if (checkAllReady()) {
+
 	}
 }
 
