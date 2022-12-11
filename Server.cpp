@@ -139,6 +139,8 @@ DWORD WINAPI roomDataResendThread(LPVOID arg)
 		}
 		if (goStart) {
 			EndDialog(hDlg, 0);
+			HANDLE hnd = CreateThread(NULL, 0, inGameServerThread, (LPVOID)&wr_server, 0, NULL);
+			CloseHandle(hnd);
 		}
 
 		if (retval == SOCKET_ERROR) {
@@ -158,6 +160,7 @@ DWORD WINAPI inGameServerThread(LPVOID arg)
 
 DWORD WINAPI inGameClientThread(LPVOID arg)
 {
+
 	return 0;
 }
 
@@ -320,6 +323,8 @@ int WAITING_ROOM::stringAnalysis(char* recvdata)
 		else if (strcmp(recvdata, "ST") == 0) {
 			pressStart();
 			EndDialog(DlgHandle, 0);
+			HANDLE hnd = CreateThread(NULL, 0, inGameClientThread, (LPVOID)this, 0, NULL);
+			CloseHandle(hnd);
 		}
 	}
 
