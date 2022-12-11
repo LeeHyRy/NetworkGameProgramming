@@ -5,6 +5,7 @@
 #include <ws2tcpip.h> // 윈속2 확장 헤더
 #include <stdio.h> // printf(), ...
 #include "resource.h"
+#include "GameFrame.h"
 
 #pragma comment(lib, "ws2_32") // ws2_32.lib 링크
 

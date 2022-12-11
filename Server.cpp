@@ -154,7 +154,7 @@ DWORD WINAPI roomDataResendThread(LPVOID arg)
 
 DWORD WINAPI inGameServerThread(LPVOID arg)
 {
-
+	INGAME ig_server = *(INGAME*)arg;
 	return 0;
 }
 

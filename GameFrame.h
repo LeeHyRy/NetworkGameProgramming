@@ -9,7 +9,7 @@
 #include "Monster.h"
 #include "Barigate.h"
 #include "Stage.h"
-#include "Server.h"
+
 
 class GameFrame {
 public:
@@ -30,9 +30,9 @@ private:
 	wstring m_objFileName{ };
 	string m_createObjTag{ };
 #endif
-
+public:
 	Stage* m_curStage{ };
-	vector<Stage*> m_stageVec{ };
+	vector<Stage*> m_stageVec{ };//스테이지 목록
 
 public:
 

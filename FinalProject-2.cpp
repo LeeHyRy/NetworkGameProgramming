@@ -3,6 +3,7 @@
 
 #include "GameFrame.h"
 #include "FinalProject-2.h"
+#include "Server.h"
 
 #define MAX_LOADSTRING 100
 
