@@ -172,13 +172,18 @@ DWORD WINAPI roomDataResendThread(LPVOID arg)
 			}
 		}
 		if (goStart) {
-			EndDialog(hDlg, 0);
-			IG.IngameSet(cl_sock, cl_num);
-			IG.SetIsHost(true);
-			HANDLE hnd = CreateThread(NULL, 0, inGameServerThread, (LPVOID)&IG, 0, NULL);
-			CloseHandle(hnd);
-			Sleep(100);
-			return 0;
+			
+			INGAME* newIG = new INGAME(cl_sock, cl_num);
+			IG = newIG;
+			IG->SetIsHost(true);
+			if (IG != NULL)
+			{
+				HANDLE hnd = CreateThread(NULL, 0, inGameServerThread, (LPVOID)&IG, 0, NULL);
+				CloseHandle(hnd);
+
+				EndDialog(hDlg, 0);
+				return 0;
+			}
 		}
 
 		if (retval == SOCKET_ERROR) {
@@ -426,15 +431,19 @@ int WAITING_ROOM::stringAnalysis(char* recvdata)
 		}
 		else if (strcmp(recvdata, "ST") == 0) {
 			pressStart();
-			IG.IngameSet(my_sock, my_num);
+			INGAME* newIG = new INGAME(my_sock, my_num);
+			IG = newIG;
+			if (IG != NULL)
+			{
+				HANDLE hnd = CreateThread(NULL, 0, inGameClientThread, (LPVOID)&IG, 0, NULL);
+				CloseHandle(hnd);
+				hnd = CreateThread(NULL, 0, inGameClientResendThread, (LPVOID)&IG, 0, NULL);
+				CloseHandle(hnd);
 
-			HANDLE hnd = CreateThread(NULL, 0, inGameClientThread, (LPVOID)&IG, 0, NULL);
-			CloseHandle(hnd);
-			hnd = CreateThread(NULL, 0, inGameClientResendThread, (LPVOID)&IG, 0, NULL);
-			CloseHandle(hnd);
-
-			EndDialog(DlgHandle, 0);
-			return -2;
+				EndDialog(DlgHandle, 0);
+				return -2;
+			}
+			
 		}
 	}
 
@@ -548,24 +557,11 @@ INGAME::INGAME(SOCKET sock, int num)
 	my_num = num;
 }
 
-void INGAME::IngameSet(SOCKET sock, int num)
-{
-	my_sock = sock;
-	my_num = num;
-}
-
 INGAME::~INGAME()
 {
 }
 
 INGAME::INGAME(const INGAME& ig)
-{
-	my_sock = ig.my_sock;
-	my_num = ig.my_num;
-	is_host = ig.is_host;
-}
-
-void INGAME::IngameSet(const INGAME& ig)
 {
 	my_sock = ig.my_sock;
 	my_num = ig.my_num;
