@@ -11,15 +11,15 @@ public:
 	Stage(const wstring& backGroundFileName);
 	~Stage();
 
+	class Player* m_player{ };
+	list<class Player*> m_otherPlayerList{ }; //다른 멀티 플레이어 리스트
+
 private:
 	int m_stageNum{ };
 	CImage* m_backBuffer{ };
 	pair<string, wstring> m_backBufferInfo{ };
 	wstring m_backGroundFileName{ };
 	string m_backGroundKey{ };
-
-	class Player* m_player{ };
-	list<class Player*> m_otherPlayerList{ }; //다른 멀티 플레이어 리스트
 
 	list<class Monster*> m_monsterList{ };
 	list<class Barigate*> m_barigateList{ };

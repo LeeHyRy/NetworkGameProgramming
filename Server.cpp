@@ -12,7 +12,10 @@ DWORD WINAPI roomServerThread(LPVOID arg)
 	while (1) {
 		client_sock = accept(server_sock, (struct sockaddr*)&clientaddr, &addrlen);
 		short cl_num = wr_server.FindBlankPlayer();
-		if (cl_num == -1) return 0;
+		if (cl_num == -1) {
+			closesocket(client_sock);
+			continue;
+		};
 		wr_server.SetMyNum(cl_num);
 		wr_server.SetMySock(client_sock);
 		hnd = CreateThread(NULL, 0, roomDataProcessingThread, (LPVOID)&wr_server, 0, NULL);
@@ -123,12 +126,31 @@ DWORD WINAPI roomDataResendThread(LPVOID arg)
 			SetDlgItemTextA(hDlg, IDC_P1READY + cl_num, (strcmp(tmpbuf, "") == 0) ? "" : "Starting...");
 		}
 
+		// 내가 시작 중(Starting)인 맨 위의 플레이어일 때, 시작(Start)처리
+		bool checkWrongAccess = false;
+		for (int i{}; i < cl_num; ++i) {
+			GetDlgItemTextA(hDlg, IDC_P1NAME + i, tmpbuf, NICKBUFSIZE);
+			if (strcmp(tmpbuf, "") != 0) {
+				GetDlgItemTextA(hDlg, IDC_P1READY + i, tmpbuf, NICKBUFSIZE);
+				if (strcmp(tmpbuf, "Starting...") == 0) {
+					checkWrongAccess = true;
+					break;
+				}
+			}
+		}
+		GetDlgItemTextA(hDlg, IDC_P1READY + cl_num, tmpbuf, NICKBUFSIZE);
+		if (!checkWrongAccess && strcmp(tmpbuf, "Starting...") == 0) {
+			// 시작 처리
+			SetDlgItemTextA(hDlg, IDC_P1READY + cl_num, "Start!");
+		}
+
+		// 모든 플레이어가 시작 상태일 때 Dlg를 끄고 인게임으로
 		bool goStart = false;
 		for (int i{}; i < 3; ++i) {
 			GetDlgItemTextA(hDlg, IDC_P1NAME + i, tmpbuf, NICKBUFSIZE);
 			if (strcmp(tmpbuf, "") != 0) {
 				GetDlgItemTextA(hDlg, IDC_P1READY + i, tmpbuf, NICKBUFSIZE);
-				if (strcmp(tmpbuf, "Starting...") == 0) {
+				if (strcmp(tmpbuf, "Start!") == 0) {
 					goStart = true;
 				}
 				else {
@@ -155,6 +177,18 @@ DWORD WINAPI roomDataResendThread(LPVOID arg)
 DWORD WINAPI inGameServerThread(LPVOID arg)
 {
 	INGAME ig_server = *(INGAME*)arg;
+	SOCKET cl_sock = ig_server.GetMySock();
+	char recvcode[30];
+	int retval;
+	//gameFrame.m_curStage->m_player->GetPlayerPt();
+	while (1) {
+		retval = recv(cl_sock, recvcode, 3, MSG_WAITALL);
+
+		// 경우에 따라 상호작용 종료
+		if (ig_server.stringAnalysis(recvcode) == -1 || retval <= 0)
+			break;
+	}
+
 	return 0;
 }
 
@@ -425,14 +459,58 @@ bool WAITING_ROOM::GetIsHost()
 	return is_host;
 }
 
-// ----------------------------------------------------------------------------
-// ----------------------------------------------------------------------------
-// ----------------------------------------------------------------------------
-
 INGAME::INGAME()
 {
 }
 
 INGAME::~INGAME()
 {
+}
+
+int INGAME::GetMyNum()
+{
+	return my_num;
+}
+
+SOCKET INGAME::GetMySock()
+{
+	return my_sock;
+}
+
+int INGAME::stringAnalysis(char* recvdata)
+{
+	int retval = 0;
+	char recvcode[30];
+	char tmpstr[2];
+
+	// Host인 경우의 수신정보 처리
+	if (is_host) {
+		if (strcmp(recvdata, "CO") == 0) { // 좌표 정보 수신의 경우
+			if (recv(my_sock, recvcode, 5, MSG_WAITALL) <= 0)
+				return -1;
+			int xcoord = atoi(recvcode);
+
+			if (recv(my_sock, recvcode, 5, MSG_WAITALL) <= 0)
+				return -1;
+			int ycoord = atoi(recvcode);
+		}
+	}
+	// Client인 경우의 수신정보 처리
+	else {
+		if (strcmp(recvdata, "CO") == 0) {
+			if (recv(my_sock, recvcode, 2, MSG_WAITALL) <= 0)
+				return -1;
+			int editnum = atoi(recvcode);
+
+			if (recv(my_sock, recvcode, 5, MSG_WAITALL) <= 0)
+				return -1;
+			int xcoord = atoi(recvcode);
+
+			if (recv(my_sock, recvcode, 5, MSG_WAITALL) <= 0)
+				return -1;
+			int ycoord = atoi(recvcode);
+		}
+	}
+
+	return 0;
 }

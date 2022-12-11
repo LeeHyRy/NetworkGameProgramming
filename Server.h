@@ -68,6 +68,13 @@ public:
 	INGAME();
 	~INGAME();
 
+	int			GetMyNum();
+	SOCKET		GetMySock();
+	int			stringAnalysis(char* recvdata);
 
 private:
+	SOCKET				my_sock;
+
+	int					my_num{ -1 };
+	bool				is_host{ false };
 };
