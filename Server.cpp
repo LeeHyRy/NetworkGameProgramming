@@ -81,7 +81,6 @@ DWORD WINAPI roomDataResendThread(LPVOID arg)
 	short cl_num = wr_server.GetMyNum();
 	SOCKET cl_sock = wr_server.GetMySock();
 	HWND hDlg = wr_server.GetDlgHandle();
-	char recvcode[30];
 	char tmpbuf[NICKBUFSIZE];
 	char tmpstr[2];
 	int retval = 0;
@@ -117,12 +116,48 @@ DWORD WINAPI roomDataResendThread(LPVOID arg)
 			}
 		}
 
+		GetDlgItemTextA(hDlg, IDC_HOSTREADY, tmpbuf, NICKBUFSIZE);
+		if (strcmp(tmpbuf, "Starting...") == 0) {
+			retval = send(cl_sock, (char*)"ST", 3, 0);
+			GetDlgItemTextA(hDlg, IDC_P1READY + cl_num, tmpbuf, NICKBUFSIZE);
+			SetDlgItemTextA(hDlg, IDC_P1READY + cl_num, (strcmp(tmpbuf, "") == 0) ? "" : "Starting...");
+		}
+
+		bool goStart = false;
+		for (int i{}; i < 3; ++i) {
+			GetDlgItemTextA(hDlg, IDC_P1NAME + i, tmpbuf, NICKBUFSIZE);
+			if (strcmp(tmpbuf, "") != 0) {
+				GetDlgItemTextA(hDlg, IDC_P1READY + i, tmpbuf, NICKBUFSIZE);
+				if (strcmp(tmpbuf, "Starting...") == 0) {
+					goStart = true;
+				}
+				else {
+					goStart = false;
+					break;
+				}
+			}
+		}
+		if (goStart) {
+			EndDialog(hDlg, 0);
+		}
+
 		if (retval == SOCKET_ERROR) {
 			break;
 		}
 		Sleep(333);
 	}
 
+	return 0;
+}
+
+DWORD WINAPI inGameServerThread(LPVOID arg)
+{
+
+	return 0;
+}
+
+DWORD WINAPI inGameClientThread(LPVOID arg)
+{
 	return 0;
 }
 
@@ -282,6 +317,10 @@ int WAITING_ROOM::stringAnalysis(char* recvdata)
 			GetDlgItemTextA(DlgHandle, IDC_P1READY + editnum, tmpstr, 10);
 			SetDlgItemTextA(DlgHandle, IDC_P1READY + editnum, (strcmp(tmpstr, "") == 0) ? "Ready!" : "");
 		}
+		else if (strcmp(recvdata, "ST") == 0) {
+			pressStart();
+			EndDialog(DlgHandle, 0);
+		}
 	}
 
 	return 0;
@@ -299,17 +338,28 @@ bool WAITING_ROOM::checkAllReady()
 {
 	char tmpstr[10];
 	for (int i{}; i < 3; ++i) {
-		GetDlgItemTextA(DlgHandle, IDC_P1READY + i, tmpstr, 10);
-		if (strcmp(tmpstr, "") == 0)
-			return false;
+		GetDlgItemTextA(DlgHandle, IDC_P1NAME + i, tmpstr, 10);
+		if (strcmp(tmpstr, "") != 0) {
+			GetDlgItemTextA(DlgHandle, IDC_P1READY + i, tmpstr, 10);
+			if (strcmp(tmpstr, "") == 0)
+				return false;
+		}
 	}
 	return true;
 }
 
 void WAITING_ROOM::pressStart()
 {
-	if (checkAllReady()) {
+	if (checkAllReady()){
+		char tmpstr[30];
 
+		SetDlgItemTextA(DlgHandle, IDC_HOSTREADY, "Starting...");
+		if (!is_host) {
+			for (int i{}; i < 3; ++i) {
+				GetDlgItemTextA(DlgHandle, IDC_P1READY + i, tmpstr, 10);
+				SetDlgItemTextA(DlgHandle, IDC_P1READY + i, (strcmp(tmpstr, "") == 0) ? "" : "Starting...");
+			}
+		}
 	}
 }
 
@@ -363,4 +413,21 @@ HWND WAITING_ROOM::GetDlgHandle()
 void WAITING_ROOM::SetDlgHandle(HWND in)
 {
 	DlgHandle = in;
+}
+
+bool WAITING_ROOM::GetIsHost()
+{
+	return is_host;
+}
+
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+INGAME::INGAME()
+{
+}
+
+INGAME::~INGAME()
+{
 }

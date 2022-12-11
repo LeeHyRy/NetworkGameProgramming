@@ -334,6 +334,7 @@ void Stage::CollisionCheck(float deltaTime) {
 	list<Monster*>::iterator mIterEnd = m_monsterList.end();
 	list<Barigate*>::iterator bgIterEnd = m_barigateList.end();
 	list<Bullet*>::iterator blIterEnd = m_bulletList.end();
+	list<Player*>::iterator opIterEnd = m_otherPlayerList.end();
 
 	for (auto iter = m_monsterList.begin(); iter != mIterEnd; ++iter) {
 		RECT rcTemp{ };
@@ -425,6 +426,41 @@ void Stage::CollisionCheck(float deltaTime) {
 			if (IntersectRect(&temp, &pRC, &tmp)) {
 				if (pPvRC.bottom <= tmp.top + 1) {
 					m_player->OnGround();
+				}
+			}
+		}
+	}
+
+	for (auto bgIter = m_barigateList.begin(); bgIter != bgIterEnd; ++bgIter) {
+		RECT bgRC = (*bgIter)->GetRC();
+		for (auto opIter = m_otherPlayerList.begin(); opIter != opIterEnd; ++opIter) {
+			RECT opRC = (*opIter)->GetPlayerRC();
+			RECT opPvRC = (*opIter)->GetPrevRC();
+			if (IntersectRect(&temp, &opRC, &bgRC)) {
+				if (opPvRC.bottom <= bgRC.top) {
+					(*opIter)->OnGround(bgRC.top);
+				}
+				else {
+					if (opPvRC.top >= bgRC.bottom) {
+						(*opIter)->SetPower(0);
+					}
+
+					SIZE boxSize = (*opIter)->GetHitBoxSize();
+					if (opPvRC.left >= bgRC.right) {
+						(*opIter)->SetX(bgRC.right + boxSize.cx / 2);
+					}
+					else if (opPvRC.right <= bgRC.left) {
+						(*opIter)->SetX(bgRC.left - boxSize.cx / 2);
+					}
+				}
+			}
+			else {
+				RECT tmp = bgRC;
+				tmp.top -= 1;
+				if (IntersectRect(&temp, &opRC, &tmp)) {
+					if (opPvRC.bottom <= tmp.top + 1) {
+						(*opIter)->OnGround();
+					}
 				}
 			}
 		}

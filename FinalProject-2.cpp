@@ -517,11 +517,18 @@ INT_PTR CALLBACK DialogProc_Server(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM l
         case IDC_READY:
             wr.pressReady();
             return TRUE;
+        case IDC_START:
+            if (wr.GetIsHost())
+                wr.pressStart();
+            return TRUE;
         }
         return FALSE;
     case WM_CLOSE:
         EnableWindow(hWndAll, TRUE);
         EndDialog(hDlg, LOWORD(wParam));
+        return TRUE;
+    case WM_DESTROY:
+        EnableWindow(hWndAll, TRUE);
         return TRUE;
     }
     return FALSE;

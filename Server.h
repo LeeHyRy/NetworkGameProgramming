@@ -16,11 +16,8 @@ DWORD WINAPI roomClientThread(LPVOID arg);
 DWORD WINAPI roomDataProcessingThread(LPVOID arg);
 DWORD WINAPI roomDataResendThread(LPVOID arg);
 
-typedef struct PLAYERINFO {
-	char nickname[NICKBUFSIZE] = "";
-	bool isReady = false;
-	SOCKET sock = INVALID_SOCKET;
-}PlayerInfo;
+DWORD WINAPI inGameServerThread(LPVOID arg);
+DWORD WINAPI inGameClientThread(LPVOID arg);
 
 class WAITING_ROOM
 {
@@ -50,6 +47,7 @@ public:
 	void		SetMySock(SOCKET in);
 	HWND		GetDlgHandle();
 	void		SetDlgHandle(HWND in);
+	bool		GetIsHost();
 
 
 private:
@@ -63,8 +61,12 @@ private:
 	HWND				DlgHandle;
 };
 
-struct CLIENTINFO {
-	SOCKET sock;
-	HWND dlg;
-	short num;
+class INGAME
+{
+public:
+	INGAME();
+	~INGAME();
+
+
+private:
 };
