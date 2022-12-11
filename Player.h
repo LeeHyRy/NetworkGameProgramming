@@ -12,8 +12,8 @@
 
 class Player {
 public:
-	Player(bool myControl);
-	Player(bool myControl, const POINT& pt);
+	Player(bool myControl, int playerNum);
+	Player(bool myControl, int playerNum, const POINT& pt);
 	~Player();
 
 private:

@@ -3,10 +3,30 @@
 #include "EffectManager.h"
 #include "Server.h"
 
-Player::Player(bool myControl) {
-	AnimationManager::GetInst()->AddNewAnimation("PlayerAnimation", L"RedHood.bmp", POINT{ 26, 5 });
-
-	m_animation = AnimationManager::GetInst()->GetAnimation("PlayerAnimation");
+Player::Player(bool myControl,int playerNum) {
+	switch (playerNum)
+	{
+	case 0:
+		AnimationManager::GetInst()->AddNewAnimation("PlayerAnimation", L"RedHood.bmp", POINT{ 26, 5 });
+		m_animation = AnimationManager::GetInst()->GetAnimation("PlayerAnimation");
+		break;
+	case 1:
+		AnimationManager::GetInst()->AddNewAnimation("PlayerAnimation1", L"RedHood1.bmp", POINT{ 26, 5 });
+		m_animation = AnimationManager::GetInst()->GetAnimation("PlayerAnimation1");
+		break;
+	case 2:
+		AnimationManager::GetInst()->AddNewAnimation("PlayerAnimation2", L"RedHood2.bmp", POINT{ 26, 5 });
+		m_animation = AnimationManager::GetInst()->GetAnimation("PlayerAnimation2");
+		break;
+	case 3:
+		AnimationManager::GetInst()->AddNewAnimation("PlayerAnimation3", L"RedHood3.bmp", POINT{ 26, 5 });
+		m_animation = AnimationManager::GetInst()->GetAnimation("PlayerAnimation3");
+		break;
+	default:
+		AnimationManager::GetInst()->AddNewAnimation("PlayerAnimation", L"RedHood.bmp", POINT{ 26, 5 });
+		m_animation = AnimationManager::GetInst()->GetAnimation("PlayerAnimation");
+		break;
+	}
 
 	m_playerSize = { 100, 100 };
 
@@ -33,10 +53,31 @@ Player::Player(bool myControl) {
 		m_myControl = true;
 }
 
-Player::Player(bool myControl, const POINT& pt) {
-	AnimationManager::GetInst()->AddNewAnimation("PlayerAnimation", L"RedHood.bmp", POINT{ 26, 5 });
-
-	m_animation = AnimationManager::GetInst()->GetAnimation("PlayerAnimation");
+Player::Player(bool myControl, int playerNum, const POINT& pt) {
+	switch (playerNum)
+	{
+	case 0:
+		AnimationManager::GetInst()->AddNewAnimation("PlayerAnimation", L"RedHood.bmp", POINT{ 26, 5 });
+		m_animation = AnimationManager::GetInst()->GetAnimation("PlayerAnimation");
+		break;
+	case 1:
+		AnimationManager::GetInst()->AddNewAnimation("PlayerAnimation1", L"RedHood1.bmp", POINT{ 26, 5 });
+		m_animation = AnimationManager::GetInst()->GetAnimation("PlayerAnimation1");
+		break;
+	case 2:
+		AnimationManager::GetInst()->AddNewAnimation("PlayerAnimation2", L"RedHood2.bmp", POINT{ 26, 5 });
+		m_animation = AnimationManager::GetInst()->GetAnimation("PlayerAnimation2");
+		break;
+	case 3:
+		AnimationManager::GetInst()->AddNewAnimation("PlayerAnimation3", L"RedHood3.bmp", POINT{ 26, 5 });
+		m_animation = AnimationManager::GetInst()->GetAnimation("PlayerAnimation3");
+		break;
+	default:
+		AnimationManager::GetInst()->AddNewAnimation("PlayerAnimation", L"RedHood.bmp", POINT{ 26, 5 });
+		m_animation = AnimationManager::GetInst()->GetAnimation("PlayerAnimation");
+		break;
+	}
+	
 
 	m_playerPt = pt;
 

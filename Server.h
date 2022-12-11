@@ -69,14 +69,17 @@ class INGAME
 public:
 	INGAME();
 	INGAME(SOCKET sock, int num);
+	void IngameSet(SOCKET sock, int num);
 	~INGAME();
 	INGAME(const INGAME& ig);
+	void IngameSet(const INGAME& ig);
 
 
 
 	int			GetMyNum();
 	SOCKET		GetMySock();
 	bool		GetIsHost();
+	int			GetPlayerCount();
 	void		SetIsHost(bool in);
 	int			stringAnalysis(Player* op, char* recvdata);
 
@@ -84,5 +87,10 @@ private:
 	SOCKET				my_sock;
 
 	int					my_num{ -1 };
+	int					player_count{ 1 }; //나까지 포함해서 총 플레이어의 숫자
 	bool				is_host{ false };
 };
+
+//전역 변수들
+static WAITING_ROOM wr;
+static INGAME IG;

@@ -157,7 +157,7 @@ void GameFrame::MouseMessage(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 			    cameraPos.y - clientSize.cy / 2 + HIWORD(lParam) };
 
             if (m_createObjTag == TAGPLAYER) {
-                m_curStage->AddPlayer(new Player{ true, mousePt });
+                m_curStage->AddPlayer(new Player{ true, 0, mousePt });
             }
             else if (m_createObjTag == TAGMUSHROOM) {
                 m_curStage->AddMonster(new BadOrange{ mousePt });

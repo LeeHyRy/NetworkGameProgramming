@@ -9,6 +9,7 @@
 #include "BadOrange.h"
 #include "Portal.h"
 #include "Button.h"
+#include "server.h"
 
 Stage::Stage() {
 #ifdef EDIT
@@ -726,13 +727,19 @@ bool Stage::Load(const string& fileName) {
 		}
 		else if (tag == TAGPLAYER) {
 			if (!m_player) {
-				Player* newObj = new Player(true);
+				//자기 캐릭터 생성
+				Player* newObj = new Player(true, IG.GetMyNum());
 				newObj->Load(fp);
 				m_player = newObj;
 
-				Player* OtherPlayer1 = new Player(false);
-				OtherPlayer1->SetPt(m_player->GetPlayerPt());
-				m_otherPlayerList.push_back(OtherPlayer1);
+				//다른 멀티 플레이어 캐릭터 생성
+				for (int i = 1; i < IG.GetPlayerCount(); i++)
+				{
+					Player* OtherPlayer1 = new Player(false, i);
+					OtherPlayer1->SetPt(m_player->GetPlayerPt());
+					m_otherPlayerList.push_back(OtherPlayer1);
+				}
+
 			}
 		}
 		else if (tag == TAGBARIGATE) {

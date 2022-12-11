@@ -173,9 +173,9 @@ DWORD WINAPI roomDataResendThread(LPVOID arg)
 		}
 		if (goStart) {
 			EndDialog(hDlg, 0);
-			INGAME ig(cl_sock, cl_num);
-			ig.SetIsHost(true);
-			HANDLE hnd = CreateThread(NULL, 0, inGameServerThread, (LPVOID)&ig, 0, NULL);
+			IG.IngameSet(cl_sock, cl_num);
+			IG.SetIsHost(true);
+			HANDLE hnd = CreateThread(NULL, 0, inGameServerThread, (LPVOID)&IG, 0, NULL);
 			CloseHandle(hnd);
 			Sleep(100);
 			return 0;
@@ -426,11 +426,11 @@ int WAITING_ROOM::stringAnalysis(char* recvdata)
 		}
 		else if (strcmp(recvdata, "ST") == 0) {
 			pressStart();
-			INGAME ig(my_sock, my_num);
+			IG.IngameSet(my_sock, my_num);
 
-			HANDLE hnd = CreateThread(NULL, 0, inGameClientThread, (LPVOID)&ig, 0, NULL);
+			HANDLE hnd = CreateThread(NULL, 0, inGameClientThread, (LPVOID)&IG, 0, NULL);
 			CloseHandle(hnd);
-			hnd = CreateThread(NULL, 0, inGameClientResendThread, (LPVOID)&ig, 0, NULL);
+			hnd = CreateThread(NULL, 0, inGameClientResendThread, (LPVOID)&IG, 0, NULL);
 			CloseHandle(hnd);
 
 			EndDialog(DlgHandle, 0);
@@ -548,11 +548,24 @@ INGAME::INGAME(SOCKET sock, int num)
 	my_num = num;
 }
 
+void INGAME::IngameSet(SOCKET sock, int num)
+{
+	my_sock = sock;
+	my_num = num;
+}
+
 INGAME::~INGAME()
 {
 }
 
 INGAME::INGAME(const INGAME& ig)
+{
+	my_sock = ig.my_sock;
+	my_num = ig.my_num;
+	is_host = ig.is_host;
+}
+
+void INGAME::IngameSet(const INGAME& ig)
 {
 	my_sock = ig.my_sock;
 	my_num = ig.my_num;
@@ -574,6 +587,10 @@ bool INGAME::GetIsHost()
 	return is_host;
 }
 
+int INGAME::GetPlayerCount()
+{
+	return player_count;
+}
 void INGAME::SetIsHost(bool in)
 {
 	is_host = in;
