@@ -457,6 +457,7 @@ void WAITING_ROOM::SetDlgHandle(HWND in)
 bool WAITING_ROOM::GetIsHost()
 {
 	return is_host;
+	
 }
 
 INGAME::INGAME()

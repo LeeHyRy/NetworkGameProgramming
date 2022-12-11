@@ -15,6 +15,8 @@ DWORD WINAPI roomClientThread(LPVOID arg);
 DWORD WINAPI roomDataProcessingThread(LPVOID arg);
 DWORD WINAPI roomDataResendThread(LPVOID arg);
 
+DWORD WINAPI inGameServerThread(LPVOID arg);
+
 typedef struct PLAYERINFO {
 	char nickname[NICKBUFSIZE] = "";
 	bool isReady = false;
@@ -49,6 +51,7 @@ public:
 	void		SetMySock(SOCKET in);
 	HWND		GetDlgHandle();
 	void		SetDlgHandle(HWND in);
+	bool		GetIsHost();
 
 
 private:
@@ -62,12 +65,11 @@ private:
 	HWND				DlgHandle;
 };
 
-<<<<<<< HEAD
 struct CLIENTINFO {
 	SOCKET sock;
 	HWND dlg;
 	short num;
-=======
+};
 class INGAME
 {
 public:
@@ -83,8 +85,4 @@ private:
 
 	int					my_num{ -1 };
 	bool				is_host{ false };
-<<<<<<< HEAD
->>>>>>> 96b5bd690f54986b92f87682e24ee4b734381c60
-=======
->>>>>>> 96b5bd690f54986b92f87682e24ee4b734381c60
 };
