@@ -32,6 +32,7 @@ DWORD WINAPI roomClientThread(LPVOID arg)
 	SOCKET sv_sock = wr_server.GetMySock();
 	HWND hDlg = wr_server.GetDlgHandle();
 	char recvcode[30];
+	int strcode;
 
 	int retval = recv(sv_sock, recvcode, NICKBUFSIZE, MSG_WAITALL);
 	SetDlgItemTextA(hDlg, IDC_HOSTNAME, recvcode); // IDC_P1NAME + n = IDC_P(n+1)NAME
@@ -40,8 +41,13 @@ DWORD WINAPI roomClientThread(LPVOID arg)
 		retval = recv(sv_sock, recvcode, 3, MSG_WAITALL);
 
 		// 경우에 따라 상호작용 종료
-		if (wr_server.stringAnalysis(recvcode) == -1) {
+		
+		strcode = wr_server.stringAnalysis(recvcode);
+		if (strcode == -1 || retval <= 0) {
 			break;
+		}
+		else if (strcode == -2) {
+			return 0;
 		}
 	}
 
@@ -62,13 +68,19 @@ DWORD WINAPI roomDataProcessingThread(LPVOID arg)
 	HWND hDlg = wr_server.GetDlgHandle();
 	char recvcode[30];
 	int retval = 0;
+	int strcode;
 
 	while (1) {
 		int retval = recv(cl_sock, recvcode, 3, MSG_WAITALL);
 
 		// 경우에 따라 상호작용 종료
-		if (wr_server.stringAnalysis(recvcode) == -1 || retval <= 0)
+		strcode = wr_server.stringAnalysis(recvcode);
+		if (strcode == -1 || retval <= 0) {
 			break;
+		}
+		else if (strcode == -2) {
+			return 0;
+		}
 	}
 
 	// 클라이언트 cl_num과의 연결 종료와 처리
@@ -165,6 +177,8 @@ DWORD WINAPI roomDataResendThread(LPVOID arg)
 			ig.SetIsHost(true);
 			HANDLE hnd = CreateThread(NULL, 0, inGameServerThread, (LPVOID)&ig, 0, NULL);
 			CloseHandle(hnd);
+			Sleep(100);
+			return 0;
 		}
 
 		if (retval == SOCKET_ERROR) {
@@ -233,7 +247,7 @@ DWORD WINAPI inGameClientResendThread(LPVOID arg)
 			char coordbuf[5];
 			strcpy(coordbuf, "0000");
 			char tmpbuf[5];
-			_itoa(pt.x, tmpbuf, 5);
+			_itoa(pt.x, tmpbuf, 10);
 			int lentmp = strlen(tmpbuf);
 			for (int i{}; i < lentmp; ++i) {
 				coordbuf[(4 - lentmp) + i] = tmpbuf[i];
@@ -241,7 +255,7 @@ DWORD WINAPI inGameClientResendThread(LPVOID arg)
 			send(sv_sock, coordbuf, 5, 0);
 
 			strcpy(coordbuf, "0000");
-			_itoa(pt.y, coordbuf, 5);
+			_itoa(pt.y, tmpbuf, 10);
 			lentmp = strlen(tmpbuf);
 			for (int i{}; i < lentmp; ++i) {
 				coordbuf[(4 - lentmp) + i] = tmpbuf[i];
@@ -420,6 +434,7 @@ int WAITING_ROOM::stringAnalysis(char* recvdata)
 			CloseHandle(hnd);
 
 			EndDialog(DlgHandle, 0);
+			return -2;
 		}
 	}
 
