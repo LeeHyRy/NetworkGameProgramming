@@ -9,7 +9,7 @@
 #include "Button.h"
 #include "Server.h"
 
-GameFrame::GameFrame() : m_hInst{ }, m_hWnd{ }, m_hDC{ }, m_gameRunning{ true } { }
+GameFrame::GameFrame() : m_hInst{ }, m_hWnd{ }, m_hDC{ }, m_gameRunning{ true } {}
 
 GameFrame::~GameFrame() {
     Timer::Destroy();
@@ -380,3 +380,5 @@ void GameFrame::LoadStage(const string& saveFileName, int stageNum) {
         });
     m_curStage = nullptr;
 }
+
+

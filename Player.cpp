@@ -694,3 +694,4 @@ bool Player::Load(FILE* fp) {
 	fread(&m_hitBoxSize, sizeof(SIZE), 1, fp);
 	return true;
 }
+

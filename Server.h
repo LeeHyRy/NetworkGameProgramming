@@ -19,6 +19,7 @@ DWORD WINAPI roomDataResendThread(LPVOID arg);
 
 DWORD WINAPI inGameServerThread(LPVOID arg);
 DWORD WINAPI inGameClientThread(LPVOID arg);
+DWORD WINAPI inGameClientResendThread(LPVOID arg);
 
 class WAITING_ROOM
 {
@@ -62,15 +63,22 @@ private:
 	HWND				DlgHandle;
 };
 
+
 class INGAME
 {
 public:
 	INGAME();
+	INGAME(SOCKET sock, int num);
 	~INGAME();
+	INGAME(const INGAME& ig);
+
+
 
 	int			GetMyNum();
 	SOCKET		GetMySock();
-	int			stringAnalysis(char* recvdata);
+	bool		GetIsHost();
+	void		SetIsHost(bool in);
+	int			stringAnalysis(Player* op, char* recvdata);
 
 private:
 	SOCKET				my_sock;

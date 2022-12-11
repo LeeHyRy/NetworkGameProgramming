@@ -161,7 +161,9 @@ DWORD WINAPI roomDataResendThread(LPVOID arg)
 		}
 		if (goStart) {
 			EndDialog(hDlg, 0);
-			HANDLE hnd = CreateThread(NULL, 0, inGameServerThread, (LPVOID)&wr_server, 0, NULL);
+			INGAME ig(cl_sock, cl_num);
+			ig.SetIsHost(true);
+			HANDLE hnd = CreateThread(NULL, 0, inGameServerThread, (LPVOID)&ig, 0, NULL);
 			CloseHandle(hnd);
 		}
 
@@ -177,6 +179,7 @@ DWORD WINAPI roomDataResendThread(LPVOID arg)
 DWORD WINAPI inGameServerThread(LPVOID arg)
 {
 	INGAME ig_server = *(INGAME*)arg;
+	ig_server.SetIsHost(true);
 	SOCKET cl_sock = ig_server.GetMySock();
 	char recvcode[30];
 	int retval;
@@ -184,8 +187,9 @@ DWORD WINAPI inGameServerThread(LPVOID arg)
 	while (1) {
 		retval = recv(cl_sock, recvcode, 3, MSG_WAITALL);
 
+		auto opIter = gameFrame.m_curStage->m_otherPlayerList.begin();
 		// 경우에 따라 상호작용 종료
-		if (ig_server.stringAnalysis(recvcode) == -1 || retval <= 0)
+		if (ig_server.stringAnalysis(*opIter, recvcode) == -1 || retval <= 0)
 			break;
 	}
 
@@ -194,6 +198,58 @@ DWORD WINAPI inGameServerThread(LPVOID arg)
 
 DWORD WINAPI inGameClientThread(LPVOID arg)
 {
+	INGAME ig_server = *(INGAME*)arg;
+
+	SOCKET sv_sock = ig_server.GetMySock();
+	char recvcode[30];
+
+	int retval;
+
+	while (1) {
+		retval = recv(sv_sock, recvcode, 3, MSG_WAITALL);
+
+		auto opIter = gameFrame.m_curStage->m_otherPlayerList.begin();
+		// 경우에 따라 상호작용 종료
+		if (ig_server.stringAnalysis(*opIter, recvcode) == -1) {
+			break;
+		}
+
+	}
+	return 0;
+}
+
+DWORD WINAPI inGameClientResendThread(LPVOID arg)
+{
+	INGAME ig_server = *(INGAME*)arg;
+
+	SOCKET sv_sock = ig_server.GetMySock();
+	char recvcode[30];
+
+	int retval;
+	while (1) {
+		if (gameFrame.m_curStage->m_player) {
+			send(sv_sock, "CO", 3, 0);
+			POINT pt = gameFrame.m_curStage->m_player->GetPlayerPt();
+			char coordbuf[5];
+			strcpy(coordbuf, "0000");
+			char tmpbuf[5];
+			_itoa(pt.x, tmpbuf, 5);
+			int lentmp = strlen(tmpbuf);
+			for (int i{}; i < lentmp; ++i) {
+				coordbuf[(4 - lentmp) + i] = tmpbuf[i];
+			}
+			send(sv_sock, coordbuf, 5, 0);
+
+			strcpy(coordbuf, "0000");
+			_itoa(pt.y, coordbuf, 5);
+			lentmp = strlen(tmpbuf);
+			for (int i{}; i < lentmp; ++i) {
+				coordbuf[(4 - lentmp) + i] = tmpbuf[i];
+			}
+			send(sv_sock, coordbuf, 5, 0);
+		}
+		Sleep(100);
+	}
 
 	return 0;
 }
@@ -356,9 +412,14 @@ int WAITING_ROOM::stringAnalysis(char* recvdata)
 		}
 		else if (strcmp(recvdata, "ST") == 0) {
 			pressStart();
-			EndDialog(DlgHandle, 0);
-			HANDLE hnd = CreateThread(NULL, 0, inGameClientThread, (LPVOID)this, 0, NULL);
+			INGAME ig(my_sock, my_num);
+
+			HANDLE hnd = CreateThread(NULL, 0, inGameClientThread, (LPVOID)&ig, 0, NULL);
 			CloseHandle(hnd);
+			hnd = CreateThread(NULL, 0, inGameClientResendThread, (LPVOID)&ig, 0, NULL);
+			CloseHandle(hnd);
+
+			EndDialog(DlgHandle, 0);
 		}
 	}
 
@@ -459,12 +520,28 @@ bool WAITING_ROOM::GetIsHost()
 	return is_host;
 }
 
+
+
+
 INGAME::INGAME()
 {
 }
 
+INGAME::INGAME(SOCKET sock, int num)
+{
+	my_sock = sock;
+	my_num = num;
+}
+
 INGAME::~INGAME()
 {
+}
+
+INGAME::INGAME(const INGAME& ig)
+{
+	my_sock = ig.my_sock;
+	my_num = ig.my_num;
+	is_host = ig.is_host;
 }
 
 int INGAME::GetMyNum()
@@ -477,7 +554,17 @@ SOCKET INGAME::GetMySock()
 	return my_sock;
 }
 
-int INGAME::stringAnalysis(char* recvdata)
+bool INGAME::GetIsHost()
+{
+	return is_host;
+}
+
+void INGAME::SetIsHost(bool in)
+{
+	is_host = in;
+}
+
+int INGAME::stringAnalysis(Player* op, char* recvdata)
 {
 	int retval = 0;
 	char recvcode[30];
@@ -486,13 +573,16 @@ int INGAME::stringAnalysis(char* recvdata)
 	// Host인 경우의 수신정보 처리
 	if (is_host) {
 		if (strcmp(recvdata, "CO") == 0) { // 좌표 정보 수신의 경우
+			POINT pt;
 			if (recv(my_sock, recvcode, 5, MSG_WAITALL) <= 0)
 				return -1;
-			int xcoord = atoi(recvcode);
+			pt.x = atoi(recvcode);
 
 			if (recv(my_sock, recvcode, 5, MSG_WAITALL) <= 0)
 				return -1;
-			int ycoord = atoi(recvcode);
+			pt.y = atoi(recvcode);
+
+			op->SetPt(pt);
 		}
 	}
 	// Client인 경우의 수신정보 처리

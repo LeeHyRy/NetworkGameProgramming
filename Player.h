@@ -9,6 +9,7 @@
 #include "Hpbar.h"
 #include "Effect.h"
 
+
 class Player {
 public:
 	Player(bool myControl);
@@ -158,4 +159,3 @@ public:
 	bool Save(FILE* fp);
 	bool Load(FILE* fp);
 };
-
