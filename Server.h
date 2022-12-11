@@ -5,11 +5,9 @@
 #include <ws2tcpip.h> // 윈속2 확장 헤더
 #include <stdio.h> // printf(), ...
 #include "resource.h"
-#include "GameFrame.h"
 
 #pragma comment(lib, "ws2_32") // ws2_32.lib 링크
 
-#define SERVERPORT 4444
 #define NICKBUFSIZE 21
 
 DWORD WINAPI roomServerThread(LPVOID arg);
@@ -17,8 +15,11 @@ DWORD WINAPI roomClientThread(LPVOID arg);
 DWORD WINAPI roomDataProcessingThread(LPVOID arg);
 DWORD WINAPI roomDataResendThread(LPVOID arg);
 
-DWORD WINAPI inGameServerThread(LPVOID arg);
-DWORD WINAPI inGameClientThread(LPVOID arg);
+typedef struct PLAYERINFO {
+	char nickname[NICKBUFSIZE] = "";
+	bool isReady = false;
+	SOCKET sock = INVALID_SOCKET;
+}PlayerInfo;
 
 class WAITING_ROOM
 {
@@ -48,7 +49,6 @@ public:
 	void		SetMySock(SOCKET in);
 	HWND		GetDlgHandle();
 	void		SetDlgHandle(HWND in);
-	bool		GetIsHost();
 
 
 private:
@@ -62,12 +62,29 @@ private:
 	HWND				DlgHandle;
 };
 
+<<<<<<< HEAD
+struct CLIENTINFO {
+	SOCKET sock;
+	HWND dlg;
+	short num;
+=======
 class INGAME
 {
 public:
 	INGAME();
 	~INGAME();
 
+	int			GetMyNum();
+	SOCKET		GetMySock();
+	int			stringAnalysis(char* recvdata);
 
 private:
+	SOCKET				my_sock;
+
+	int					my_num{ -1 };
+	bool				is_host{ false };
+<<<<<<< HEAD
+>>>>>>> 96b5bd690f54986b92f87682e24ee4b734381c60
+=======
+>>>>>>> 96b5bd690f54986b92f87682e24ee4b734381c60
 };

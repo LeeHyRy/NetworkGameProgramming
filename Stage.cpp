@@ -726,11 +726,11 @@ bool Stage::Load(const string& fileName) {
 		}
 		else if (tag == TAGPLAYER) {
 			if (!m_player) {
-				Player* newObj = new Player(true);
+				Player* newObj = new Player(true, 0);
 				newObj->Load(fp);
 				m_player = newObj;
 
-				Player* OtherPlayer1 = new Player(false);
+				Player* OtherPlayer1 = new Player(false, 3);
 				m_otherPlayerList.push_back(OtherPlayer1);
 			}
 		}

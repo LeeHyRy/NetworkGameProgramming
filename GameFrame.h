@@ -10,7 +10,6 @@
 #include "Barigate.h"
 #include "Stage.h"
 
-
 class GameFrame {
 public:
 	GameFrame();
@@ -67,5 +66,6 @@ public:
 
 	void SaveStage(const wstring& saveFileName);
 	void LoadStage(const string& saveFileName, int stageNum);
+
 };
 

@@ -7,6 +7,7 @@
 #include "EffectManager.h"
 #include "Portal.h"
 #include "Button.h"
+#include "Server.h"
 
 GameFrame::GameFrame() : m_hInst{ }, m_hWnd{ }, m_hDC{ }, m_gameRunning{ true } { }
 
@@ -156,7 +157,15 @@ void GameFrame::MouseMessage(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 			    cameraPos.y - clientSize.cy / 2 + HIWORD(lParam) };
 
             if (m_createObjTag == TAGPLAYER) {
-                m_curStage->AddPlayer(new Player{ mousePt });
+<<<<<<< HEAD
+<<<<<<< HEAD
+                m_curStage->AddPlayer(new Player{ true,0, mousePt });
+=======
+                m_curStage->AddPlayer(new Player{ true, mousePt });
+>>>>>>> 96b5bd690f54986b92f87682e24ee4b734381c60
+=======
+                m_curStage->AddPlayer(new Player{ true, mousePt });
+>>>>>>> 96b5bd690f54986b92f87682e24ee4b734381c60
             }
             else if (m_createObjTag == TAGMUSHROOM) {
                 m_curStage->AddMonster(new BadOrange{ mousePt });
